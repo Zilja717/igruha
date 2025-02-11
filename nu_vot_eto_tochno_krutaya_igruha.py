@@ -43,6 +43,8 @@ time_spawn = 0
 
 run = 1
 
+print(111)
+
 while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
