@@ -1,13 +1,15 @@
 import pygame
 import random
+import time
 
 pygame.init()
 
 WIDTH, HEIGHT = 800, 400
 SPEED = 10
-hp = 3
-PLAYER_PATH = 'images\player_iluha.png'
-OBSTACLE_PATH = 'images\woman.png'
+hp = 1
+PLAYER_PATH = 'images\player.png'
+OBSTACLE_PATH = 'images\obstacle_woman.png'
+GG_PATH = 'images\gg.jpeg'
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
@@ -32,9 +34,12 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (100, 100))
         self.rect = self.image.get_rect(topleft=(x, y))
         self.speed = 0
+        self.live = 1
 
     def update(self):
-        # print(self.rect.y)
+        if not self.live:
+            self.image = pygame.transform.rotate(self.image, 1)
+            self.rect = self.image.get_rect(center=self.rect.center)
         if self.rect.y > 300:
             self.rect.y = 300
             self.speed = 0
@@ -47,15 +52,15 @@ class Player(pygame.sprite.Sprite):
             
     def jump(self):
         if self.rect.y >= 295:
-            # self.rect.y += self.speed
-            # print(1)
             self.speed = -20
             self.update()
-            # self.rect.y -= 100
         
     def drop(self):
         self.rect.y = 300
         self.speed = 0
+
+    def death(self):
+        self.live = 0
 
 obstacles_sprite = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
@@ -89,12 +94,27 @@ while run:
         random_time = random.randint(5, random_time // 100 + 5) * 100
     
     j.update()
-    obstacles_sprite.update()
     if pygame.sprite.spritecollide(j, obstacles_sprite, True):
         print('ОЙ ЙОЙ ЙОЙ')
         hp -= 1
         print('HP', hp)
+    
+    if hp > 0:
+        obstacles_sprite.update()
+    
+    if hp == 0:
+        j.death()
+    
+    if hp < 0:
+        gg = pygame.image.load(GG_PATH)
+        gg = pygame.transform.scale(gg, (WIDTH, HEIGHT))
+        screen.blit(gg, (0, 0))
+        pygame.display.update()
+        time.sleep(5)
+        run = 0
 
+        
+            
     screen.fill((255, 255, 255))
     obstacles_sprite.draw(screen)
     player_sprite.draw(screen)
