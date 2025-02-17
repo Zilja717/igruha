@@ -6,17 +6,17 @@ pygame.init()
 
 WIDTH, HEIGHT = 800, 400
 SPEED = 10
-hp = 1
 PLAYER_PATH = 'images\player.png'
 OBSTACLE_PATH = 'images\obstacle_woman.png'
 GG_PATH = 'images\gg.png'
 START_PATH = 'images\start.png'
 
 
+hp = 1
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
-
 points = 0
+
 
 class Obstacle(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -24,7 +24,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.image = pygame.image.load(OBSTACLE_PATH)
         self.image = pygame.transform.scale(self.image, (100, 100))
         self.rect = self.image.get_rect(topleft=(x, y))
-    
+
     def update(self):
         global points
         self.rect.x -= SPEED
@@ -33,7 +33,6 @@ class Obstacle(pygame.sprite.Sprite):
             points += 1
 
 
-    
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -50,7 +49,7 @@ class Player(pygame.sprite.Sprite):
         if not self.live:
             self.image = pygame.transform.rotate(self.image, 1)
             self.rect = self.image.get_rect(center=self.rect.center)
-        
+
         if self.rect.y > 300:
             self.rect.y = 300
             self.speed = 0
@@ -59,26 +58,26 @@ class Player(pygame.sprite.Sprite):
         else:
             self.rect.y += self.speed
             self.speed += 1
-        
-            
+
     def jump(self):
         if self.rect.y >= 295:
             self.speed = -20
             self.update()
-        
+
     def drop(self):
         self.rect.y = 300
         self.speed = 0
 
     def death(self):
         self.live = 0
-    
+
     def respawn(self):
         self.respawn_flag = 1
         self.live = 1
         self.image = pygame.image.load(PLAYER_PATH)
         self.image = pygame.transform.scale(self.image, (100, 100))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
 
 obstacles_sprite = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
@@ -108,28 +107,28 @@ while run:
                 print('game')
             if event.key == pygame.K_LSHIFT:
                 j.drop()
-                
-    if game:    
+
+    if game:
 
         time_now = pygame.time.get_ticks()
         if time_now - time_spawn >= random_time:
             obstacles_sprite.add(Obstacle(WIDTH, HEIGHT - 100))
             time_spawn = time_now
             random_time = random.randint(5, random_time // 100 + 5) * 100
-        
+
         j.update()
         obstacles_sprite.update()
         if pygame.sprite.spritecollide(j, obstacles_sprite, True):
             print('ОЙ ЙОЙ ЙОЙ')
             hp -= 1
-        
+
         if hp > 0:
             game = 1
-        
+
         if hp == 0:
             j.death()
             print(points)
-        
+
         if hp < 0:
             gg = pygame.image.load(GG_PATH)
             gg = pygame.transform.scale(gg, (WIDTH, HEIGHT))
@@ -142,9 +141,6 @@ while run:
             points = 0
             j.respawn()
 
-
-        
-            
     screen.fill((255, 255, 255))
     if game:
         obstacles_sprite.draw(screen)
@@ -153,7 +149,7 @@ while run:
         start = pygame.image.load(START_PATH)
         start = pygame.transform.scale(start, (WIDTH, HEIGHT))
         screen.blit(start, (0, 0))
-    
+
     pygame.display.update()
 
     clock.tick(60)
