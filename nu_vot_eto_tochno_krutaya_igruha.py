@@ -75,10 +75,10 @@ class Player(pygame.sprite.Sprite):
     
     def respawn(self):
         self.respawn_flag = 1
-        self.live = 1  # Возвращаем жизнь
-        self.image = pygame.image.load(PLAYER_PATH)  # Загружаем оригинальную картинку
-        self.image = pygame.transform.scale(self.image, (100, 100))  # Масштабируем
-        self.rect = self.image.get_rect(topleft=(self.x, self.y))  # Возвращаем на место
+        self.live = 1
+        self.image = pygame.image.load(PLAYER_PATH)
+        self.image = pygame.transform.scale(self.image, (100, 100))
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
 obstacles_sprite = pygame.sprite.Group()
 player_sprite = pygame.sprite.Group()
@@ -94,7 +94,6 @@ game = 0
 random_time = random.randint(10, 20) * 100
 
 while run:
-    # print(game)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = 0
@@ -105,7 +104,6 @@ while run:
             if event.key == pygame.K_SPACE and not game:
                 game = 1
                 hp = 1
-                print(game)
                 pygame.display.update()
                 print('game')
             if event.key == pygame.K_LSHIFT:
@@ -116,7 +114,6 @@ while run:
         time_now = pygame.time.get_ticks()
         if time_now - time_spawn >= random_time:
             obstacles_sprite.add(Obstacle(WIDTH, HEIGHT - 100))
-            print(9)
             time_spawn = time_now
             random_time = random.randint(5, random_time // 100 + 5) * 100
         
@@ -125,7 +122,6 @@ while run:
         if pygame.sprite.spritecollide(j, obstacles_sprite, True):
             print('ОЙ ЙОЙ ЙОЙ')
             hp -= 1
-            print('HP', hp)
         
         if hp > 0:
             game = 1
@@ -140,19 +136,18 @@ while run:
             screen.blit(gg, (0, 0))
             pygame.display.update()
             time.sleep(2)
-
-            # Сброс всех переменных
             game = 0
             hp = 1
-            obstacles_sprite.empty()  # Очищаем препятствия
+            obstacles_sprite.empty()
+            points = 0
             j.respawn()
+
 
         
             
     screen.fill((255, 255, 255))
     if game:
         obstacles_sprite.draw(screen)
-        # print(obstacles_sprite)
         player_sprite.draw(screen)
     else:
         start = pygame.image.load(START_PATH)
